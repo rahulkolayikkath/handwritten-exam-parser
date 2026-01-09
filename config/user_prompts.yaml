@@ -1,0 +1,27 @@
+page_extract_prompt : |
+  Given the page content of the student hand written answer sheet as the image, Extract the values for each of the specified key below.
+  1. student_id, is written on the top  of the answer booklet page. Extract values as string without spaces. This feild will be a number without any alphabets or without any dots. if student id not filled, return "unknown"  
+  2. student_name, is written on the top of the answer booklet page. Extract values as string. if not filled return "unknown".
+  3. page_no, is written on the top right handside. Extract the values as string. if not filled return "0".
+  4. question_numbers, return the question numbers in a list[int] in the same order the student written on the page.
+  - Question number will be running numbers 1 2 3 4.....NOT Alphabets. incase the student have written Q1, Q2 or Question 1, Question 2 and so on only extract th number "1", "2" etc.
+  - A student might also write question sub part numbers in alphabets(a,b,c) or roman numeri(i, ii, iii , iv and so on). IGNORE that.
+  - Question numbers will be written on the left margin of the page. IGNORE any question numbers that are written on the right of the left-margin or in the middle of page.
+  5. starts_with_continuation, return with true or false 
+  - true, if the first line of content on the page is not indicated with a Question Numberlike(1,2,3) to its left margin. (suggests that its continuation of some answer from the previous page)
+  - false, if the first line of content on the page is indicated with an Question Number(like 1,2,3 ..) to the left margin.(suggest that the student started the page off with a new answer)
+  Note : Do not confuse Sub Part ids like a,b,c with question numbers. For starts_with_continuation, we are looking for continuation of a question number not sub part id.
+  For empty pages: return unknown/empty lists for fields
+
+molmo_extraction_prompt : | 
+  Can you Point to the following question number(s) written on this page on the left side of the margin?
+  Question numbers : {question_numbers}
+
+verification_prompt : |
+  Given is an image of handwritten student answer and makings of bounding boxes.
+  Ideally a bouding boxe should be enclosing answer to a single question number including all its subparts.
+  bouding boxes seen on the image are:
+  {bboxes}
+  Merge togather the bouding boxes for questions {question_numbers} seperately and return only new set of bounding boxes as per the struture provided.
+  Discard any bouding boxes of answers other than question numbers mentioned. Sometimes you can find parts of answers from previous page at the start of this page. 
+
